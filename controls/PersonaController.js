@@ -5,7 +5,6 @@ var persona = models.persona;
 var rol = models.rol;
 var persona_rol = models.persona_rol;
 var cuenta = models.cuenta;
-var matricula = models.matricula;
 const bcrypt = require('bcrypt');
 const saltRounds = 8;
 
@@ -14,7 +13,7 @@ class PersonaController {
     async listar(req, res) {
         try {
             var listar = await persona.findAll({
-                attributes: ['apellidos', 'nombres', 'external_id', 'direccion', 'identificacion', 'tipo_identificacion'],
+                attributes: ['apellidos', 'nombres', 'external_id', 'cargo', 'institucion', 'fecha_nacimiento'],
                 include: {
                     model: cuenta,
                     as: 'cuenta',
@@ -34,7 +33,7 @@ class PersonaController {
             const extRol = req.params.external_rol;
             var idPersona = await persona.findOne({
                 where: { external_id: extPersona },
-                attributes: ['nombres', 'apellidos', 'identificacion', 'id']
+                attributes: ['nombres', 'apellidos', 'id']
             });
             var idRol = await persona.findOne({
                 where: { external_id: extRol },
@@ -66,38 +65,6 @@ class PersonaController {
         }
     }
 
-    async asignarMatricula(req, res) {
-        try {
-            const extPersona = req.params.external_persona;
-            var idPersona = await persona.findOne({
-                where: { external_id: extPersona },
-                attributes: ['nombres', 'apellidos', 'identificacion', 'id']
-            });
-            if (idPersona === null) {
-                res.status(400);
-                res.json({ msg: "Datos no encontrados", code: 400 });
-            } else {
-                var data = {
-                    "id_persona": idPersona.id
-                }
-                let transaction = await models.sequelize.transaction();
-                await matricula.create(data, transaction);
-                await transaction.commit();
-                res.json({
-                    msg: "SE HAN REGISTRADO LA MATRICULA",
-                    code: 200
-                });
-            }
-
-        } catch (error) {
-            if (transaction) await transaction.rollback();
-            if (error.errors && error.errors[0].message) {
-                res.json({ msg: error.errors[0].message, code: 200 });
-            } else {
-                res.json({ msg: error.message, code: 200 });
-            }
-        }
-    }
     async obtener(req, res) {
         try {
             const external = req.params.external;
@@ -108,7 +75,7 @@ class PersonaController {
                     as: 'cuenta',
                     attributes: ['correo']
                 },
-                attributes: ['apellidos', 'nombres', 'external_id', 'direccion', 'identificacion', 'tipo_identificacion'],
+                attributes: ['apellidos', 'nombres', 'external_id', 'cargo', 'institucion', 'fecha_nacimiento'],
             });
             if (listar === null) {
 
@@ -122,26 +89,6 @@ class PersonaController {
         }
     }
 
-    async obtenerExt(req, res) {
-        try {
-            const external = req.params.iden;
-            var listar = await persona.findOne({
-                where: { identificacion: external },
-                attributes: ['external_id'],
-            });
-            if (listar === null) {
-
-                listar = {};
-            }
-            res.status(200);
-            res.json({ msg: 'OK!', code: 200, info: listar });
-        } catch (error) {
-            res.status(400);
-            res.json({ msg: 'ERROR!', code: 400, info: error });
-        }
-    }
-
-
     async guardar(req, res) {
         let errors = validationResult(req);
         if (errors.isEmpty()) {
@@ -154,11 +101,11 @@ class PersonaController {
                     };
                     console.log(claveHash(req.body.clave));
                     var data = {
-                        identificacion: req.body.identificacion,
-                        tipo_identificacion: req.body.tipo_identificacion,
                         apellidos: req.body.apellidos,
                         nombres: req.body.nombres,
-                        direccion: req.body.direccion,
+                        cargo: req.body.cargo,
+                        institucion: req.body.institucion,
+                        fecha_nacimiento: req.body.fecha_nacimiento,
                         cuenta: {
                             correo: req.body.correo,
                             clave: claveHash(req.body.clave)
@@ -174,7 +121,7 @@ class PersonaController {
                         await persona.create(data, { include: [{ model: models.cuenta, as: "cuenta" }, { model: models.persona_rol, as: "persona_rol" }], transaction });
                         console.log('guardado');
                         await transaction.commit();
-                        res.json({ msg: "Se han regiustrado sus datos", code: 200 });
+                        res.json({ msg: "Se han registrado sus datos con éxito", code: 200 });
                     } catch (error) {
                         if (transaction) await transaction.rollback();
                         if (error.error && error.error[0].message) {
@@ -214,11 +161,11 @@ class PersonaController {
                 });
             } else {
                 var uuid = require('uuid');
-                person.identificacion = req.body.identificacion;
-                person.tipo_identificacion = req.body.dni_tipo;
                 person.nombres = req.body.nombres;
                 person.apellidos = req.body.apellidos;
-                person.direccion = req.body.direccion;
+                person.cargo = req.body.cargo;
+                person.institucion = req.body.institucion;
+                person.fecha_nacimiento = req.body.fecha_nacimiento;
                 person.external_id = uuid.v4();
                 var result = await person.save();
                 if (result === null) {

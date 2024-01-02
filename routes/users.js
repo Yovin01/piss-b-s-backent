@@ -10,17 +10,9 @@ const PersonaController = require('../controls/PersonaController');
 var personaController = new PersonaController();
 const CuentaController = require('../controls/CuentaController');
 var cuentaController = new CuentaController();
-const PracticaController = require('../controls/PracticaController');
-var practicaController = new PracticaController();
 let jwt = require('jsonwebtoken');
-const EntregableController = require('../controls/EntregableController');
-var entregableController = new EntregableController();
-const MateriaContoller = require('../controls/MateriaController');
-var materiaContoller = new MateriaContoller();
-const MatriculaController = require('../controls/MatriculaController');
-var matriculaController = new MatriculaController();
 
-const storage_archivo = (dir) => multer.diskStorage({
+/*const storage_archivo = (dir) => multer.diskStorage({
   destination: path.join(__dirname,'../public/archivos'+dir),
   filename: (req, file, cb) => {
     const partes = file.originalname.split('.');
@@ -28,9 +20,9 @@ const storage_archivo = (dir) => multer.diskStorage({
     cb(null, uuid.v4()+"."+extension);
   }
  
-});
+});*/
 
-const extensiones_aceptadas_archivo = (req, file, cb) => {
+/*const extensiones_aceptadas_archivo = (req, file, cb) => {
   const allowedExtensions = ['.pdf','.docx', '.xlsx'];
   const ext = path.extname(file.originalname);
   if (allowedExtensions.includes(ext)) {
@@ -38,11 +30,11 @@ const extensiones_aceptadas_archivo = (req, file, cb) => {
   } else {
     cb(new Error('Solo se permiten archivos PDF, DOCX y XLSX.'));
   }
-};
+};*/
 
-const upload_archivo_practica = multer({ storage: storage_archivo('/practicas'), limits: {
+/*const upload_archivo_practica = multer({ storage: storage_archivo('/practicas'), limits: {
   fileSize: 2 * 1024 * 1024 // 2 MB en bytes
-},fileFilter: extensiones_aceptadas_archivo});
+},fileFilter: extensiones_aceptadas_archivo});*/
 
 var auth = function middleware(req, res, next) {
   const token = req.headers['x-api-token'];
@@ -124,78 +116,30 @@ var authAdmin = function middleware(req, res, next) {
 router.get('/', function (req, res, next) {
   res.json({ "version": "1.0", "name": "pis-grupo-c-backend" });
 });
-//Sesion
+
+//INICIO DE SESION
 router.post('/sesion', [
   body('correo', 'Ingrese un correo valido').exists().not().isEmpty().isEmail(),
   body('clave', 'Ingrese una clave valido').exists().not().isEmpty(),
 ], cuentaController.sesion)
 
-//Get rol
-router.get('/rol/listar', rolController.listar);
 
-//Post rol
-router.post('/rol/guardar', rolController.guardar);
+//GET-ROL
+router.get('/listar/rol', rolController.listar);
+
+//POST ROL
+router.post('/guardar/rol', rolController.guardar);
 
 
-//Get persona
-router.get('/personas', auth, personaController.listar);
-router.get('/personas/obtener/:external', personaController.obtener);
-router.get('/personas/obtener/iden/:iden', personaController.obtenerExt);
-router.get('/persons/obtener/nomatriculado',auth, matriculaController.listarNoMatriculadas);
+//GET-PERSONA
+router.get('/listar/personas', /*auth,*/ personaController.listar);
+router.get('/obtener/personas/:external', personaController.obtener);
 
-//post persona
-router.post('/personas/guardar',authAdmin , [
+//POST-PERSONA
+router.post('/guardar/personas', [
   body('apellidos', 'Ingrese sus apellidos').trim().exists().not().isEmpty().isLength({ min: 3, max: 50 }).withMessage("Ingrese un valor mayor o igual a 3 y menor a 50"),
   body('nombres', 'Ingrese sus nombres').trim().exists().not().isEmpty().isLength({ min: 3, max: 50 }).withMessage("Ingrese un valor mayor o igual a 3 y menor a 50"),
 ], personaController.guardar);
-router.post('/personas/modificar', auth ,personaController.modificar);
-
-
-
-//get cuenta
-
-
-
-//post cuenta
-
-
-//get practica
-router.get('/practicas', auth, practicaController.listar);
-router.get('/practicas/obtener/:external',auth, practicaController.obtener);
-router.get('/practicas/materia/:external', auth,practicaController.obtenerTodas);
-router.get('/practicas/eliminar/:external',auth , practicaController.eliminar);
-router.get('/document/:ruta',practicaController.practicaDoc);
-//post practicat(
-router.post('/pracicas/modificar', auth,upload_archivo_practica.single('file'), practicaController.modificar);
-router.post('/practicas/guardar', auth,upload_archivo_practica.single('file'), practicaController.guardar);
-//get entregable
-router.get('/entregable/listar', auth,entregableController.listar);
-router.get('/entregable/:id/:identi', auth,entregableController.obtenerExter);
-router.get('/entregabl/obtenerP/:external_id',auth, entregableController.obtenerDEPreac);
-//post entregable
-router.post('/entregable/guardar', auth,upload_archivo_practica.single('file'), entregableController.guardar);
-router.post('/entregable/modificar',auth ,upload_archivo_practica.single('file'), entregableController.modificar);
-router.post('/entregable/calificar', auth,entregableController.calificar);
-router.get('/codigos/:comando', auth,entregableController.listarCodigos);
-//Materia
-router.post('/materia/guardar', auth,materiaContoller.guardar);
-router.post('/materia/modificar', authAdmin,materiaContoller.modificar);
-router.get('/materia/listar', auth,materiaContoller.listar);
-router.get('/materia/obtener/:external',auth, materiaContoller.obtener);
-router.get('/materia/participantes/:external_materia',auth,materiaContoller.participantes); 
-router.get('/materia/cursa/:external_estudiante',auth,materiaContoller.materias); 
-
-
-//usar para modulos de Materia
-//router.get('/materia/listar', materiaContoller.listar);
-//router.post('/materia/guardar', materiaContoller.guardar);
-
-//usar para modulos de Matricula
-router.post('/matricula/guardar', matriculaController.guardar);
-router.get('/matricula/obtener/persona/:external_persona', matriculaController.obtenerPorPersona);
-router.post('/matricula/asignar/curso/',auth, matriculaController.AsignarCurso);
-
-
-
+router.post('/modificar/personas', /*auth,*/ personaController.modificar);
 
 module.exports = router;

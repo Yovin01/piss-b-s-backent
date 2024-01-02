@@ -8,8 +8,9 @@ router.get('/', function(req, res, next) {
 router.get('/privado/:external', function(req, res, next) {
   require('dotenv').config();
   const llave=req.params.external;
-  const env=process.env.TEST;
-  console.log(env);
+  const env=process.env.KEY_SQ;
+  console.log(process.env);
+  console.log(llave);
   //res.send(env);
   if(llave === env){
     var models=require('../models/');
