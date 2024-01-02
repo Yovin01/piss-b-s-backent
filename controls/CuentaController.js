@@ -27,7 +27,6 @@ class CuentaController {
             INNER JOIN rol ON persona_rol.id_rol = rol.id
             WHERE persona.id = :id
           `;
-                console.log(login)
 
                 if (login === null) {
                     res.status(400);
@@ -46,8 +45,6 @@ class CuentaController {
                         return bcypt.compareSync(claveUs, clave);
                     };
 
-                    console.log(login.estado);
-
 
                     if (login.estado === "ACEPTADO") {
                         if (isClavaValida(login.clave, req.body.clave)) {
@@ -60,7 +57,7 @@ class CuentaController {
                             };
                             require('dotenv').config();
                             const llave = process.env.KEY;
-                            const token = jwt.sign(tokenData, llave, { expiresIn: "0.5h" });
+                            const token = jwt.sign(tokenData, llave, { expiresIn: "12h" });
                             const cambios = {
                                 "Descripcion": "Inicio de sesion"
                             }
@@ -70,8 +67,7 @@ class CuentaController {
                                 "data": cambios
                             }
                             //await controlAcces.create(datos);              <----pendiente
-                            var nombreRol = Buffer(lista[0].nombre);
-                            nombreRol = nombreRol.toString('base64');
+                            var nombreRol = lista[0].nombre;
                             res.json({ msg: 'Bienvenido,'+ login.persona.nombres, token: token, user: login.persona.nombres + ' ' + login.persona.apellidos, code: 200, correo: login.correo, cargo: login.persona.cargo, rol: nombreRol, external: login.persona.external_id });
 
                         } else {
