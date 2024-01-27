@@ -6,7 +6,7 @@ var peticion = models.peticion;
 class PeticionController{
     async listar(req,res){
         try {
-            var listar = await peticion.findAll({
+            var listar = await peticion.findAll({ where : { estado : 'ES' },
                 include: { model: models.cuenta, foreignKey: 'id_cuenta', attributes: ['correo'], 
                 include: { model: models.persona, foreignKey: 'id_persona', attributes: ['nombres', 'apellidos','institucion'] } },
                 attributes: ['peticion', 'external_id', 'createdAt']
