@@ -10,6 +10,8 @@ const PersonaController = require('../controls/PersonaController');
 var personaController = new PersonaController();
 const CuentaController = require('../controls/CuentaController');
 var cuentaController = new CuentaController();
+const PeticionController = require('../controls/PeticionController');
+var peticionController = new PeticionController();
 let jwt = require('jsonwebtoken');
 
 /*const storage_archivo = (dir) => multer.diskStorage({
@@ -141,5 +143,8 @@ router.post('/guardar/personas', [
   body('nombres', 'Ingrese sus nombres').trim().exists().not().isEmpty().isLength({ min: 3, max: 50 }).withMessage("Ingrese un valor mayor o igual a 3 y menor a 50"),
 ], personaController.guardar);
 router.post('/modificar/personas', /*auth,*/ personaController.modificar);
+
+//petciones
+router.get('/listar/peticiones', /*auth,*/ peticionController.listar);
 
 module.exports = router;
