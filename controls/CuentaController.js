@@ -70,7 +70,7 @@ class CuentaController {
                             //await controlAcces.create(datos);              <----pendiente
                             var nombreRol = lista[0].nombre;
                             res.json({
-                                msg: 'Bienvenido,' + login.persona.nombres,
+                                msg: 'Bienvenido, ' + login.persona.nombres,
                                 code: 200,
                                 info: {
                                     token: token,
