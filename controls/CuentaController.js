@@ -28,6 +28,7 @@ class CuentaController {
             WHERE persona.id = :id
           `;
 
+
                 if (login === null) {
                     res.status(400);
                     res.json({
@@ -68,7 +69,18 @@ class CuentaController {
                             }
                             //await controlAcces.create(datos);              <----pendiente
                             var nombreRol = lista[0].nombre;
-                            res.json({ msg: 'Bienvenido,'+ login.persona.nombres, token: token, user: login.persona.nombres + ' ' + login.persona.apellidos, code: 200, correo: login.correo, cargo: login.persona.cargo, rol: nombreRol, external: login.persona.external_id });
+                            res.json({
+                                msg: 'Bienvenido,' + login.persona.nombres,
+                                code: 200,
+                                info: {
+                                    token: token,
+                                    nombres: login.persona.nombres,
+                                    apellidos: login.persona.apellidos,
+                                    correo: login.correo,
+                                    rol: nombreRol,
+                                    user: login.persona
+                                },
+                            });
 
                         } else {
                             res.json({
