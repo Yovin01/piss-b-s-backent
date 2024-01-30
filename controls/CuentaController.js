@@ -19,14 +19,14 @@ class CuentaController {
                         attributes: ['nombres', 'apellidos', 'cargo', 'external_id'],
                     }]
                 });
-
                 const query = `
-            SELECT persona.id, persona_rol.id_persona, persona_rol.id_rol, rol.id, rol.nombre
+            SELECT persona.id, persona_rol.id_persona, persona_rol.id_rol, rol.id, rol.nombres
             FROM persona_rol
             INNER JOIN persona ON persona_rol.id_persona = persona.id
             INNER JOIN rol ON persona_rol.id_rol = rol.id
             WHERE persona.id = :id
           `;
+
 
                 if (login === null) {
                     res.status(400);
@@ -94,8 +94,8 @@ class CuentaController {
                 res.json({ msg: "Faltan datos", code: 400 });
             }
         } catch (error) {
-            res.status(200);
-            res.json({ msg: "Error al encontrar la llave", code: 400, info: error });
+            res.status(500);
+            res.json({ msg: "Error al encontrar la llave", code: 500, info: error });
         }
     }
 }

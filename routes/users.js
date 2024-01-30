@@ -146,5 +146,6 @@ router.post('/modificar/personas', /*auth,*/ personaController.modificar);
 
 //petciones
 router.get('/listar/peticiones', /*auth,*/ peticionController.listar);
+router.get('/aceptarechazar/peticiones/:external/:estado', /*auth,*/ peticionController.aceptarRechazar);
 
 module.exports = router;
