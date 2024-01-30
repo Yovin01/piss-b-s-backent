@@ -16,11 +16,11 @@ class CuentaController {
                 var login = await cuenta.findOne({
                     where: { correo: req.body.correo }, include: [{
                         model: models.persona, as: 'persona',
-                        attributes: ['nombres', 'apellidos', 'cargo', 'external_id', 'institucion', 'fecha_nacimiento'],
+                        attributes: ['nombres', 'apellidos', 'cargo', 'external_id', 'institucion'],
                     }]
                 });
                 const query = `
-            SELECT persona.id, persona_rol.id_persona, persona_rol.id_rol, rol.id, rol.nombres
+            SELECT persona.id, persona_rol.id_persona, persona_rol.id_rol, rol.id, rol.nombre
             FROM persona_rol
             INNER JOIN persona ON persona_rol.id_persona = persona.id
             INNER JOIN rol ON persona_rol.id_rol = rol.id
