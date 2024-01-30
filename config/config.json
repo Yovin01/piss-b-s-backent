@@ -3,7 +3,7 @@
         "username": "desarrollo",
         "password": "desarrollo",
         "database": "pisdb",
-        "host": "127.0.0.1",
+        "host": "172.26.0.2",
         "dialect": "mysql",
         "operatorAliases": false
     }
