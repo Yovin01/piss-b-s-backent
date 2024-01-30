@@ -13,12 +13,24 @@ class PersonaController {
     async listar(req, res) {
         try {
             var listar = await persona.findAll({
-                attributes: ['apellidos', 'nombres', 'external_id', 'cargo', 'institucion', 'fecha_nacimiento'],
-                include: {
-                    model: cuenta,
-                    as: 'cuenta',
-                    attributes: ['correo']
-                }
+                attributes: ['apellidos', 'nombres', 'external_id', 'cargo', 'institucion', 'fecha_nacimiento', 'estado'],
+                include: [
+                    {
+                        model: models.persona_rol,
+                        as: 'persona_rol',
+                        attributes: [
+                            'external_id'
+                        ],
+                        include: {
+                            model: models.rol,
+                            as: 'rol',
+                            attributes: [
+                                'nombre',
+                                'external_id'
+                            ],
+                        }
+                    },
+                ],
             });
             res.json({ msg: 'OK!', code: 200, info: listar });
         } catch (error) {

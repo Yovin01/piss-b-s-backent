@@ -16,7 +16,7 @@ class CuentaController {
                 var login = await cuenta.findOne({
                     where: { correo: req.body.correo }, include: [{
                         model: models.persona, as: 'persona',
-                        attributes: ['nombres', 'apellidos', 'cargo', 'external_id'],
+                        attributes: ['nombres', 'apellidos', 'cargo', 'external_id', 'institucion', 'fecha_nacimiento'],
                     }]
                 });
                 const query = `
@@ -26,8 +26,6 @@ class CuentaController {
             INNER JOIN rol ON persona_rol.id_rol = rol.id
             WHERE persona.id = :id
           `;
-
-
                 if (login === null) {
                     res.status(400);
                     res.json({
@@ -68,7 +66,18 @@ class CuentaController {
                             }
                             //await controlAcces.create(datos);              <----pendiente
                             var nombreRol = lista[0].nombre;
-                            res.json({ msg: 'Bienvenido,'+ login.persona.nombres, token: token, user: login.persona.nombres + ' ' + login.persona.apellidos, code: 200, correo: login.correo, cargo: login.persona.cargo, rol: nombreRol, external: login.persona.external_id });
+                            res.json({
+                                msg: 'Bienvenido, ' + login.persona.nombres,
+                                code: 200,
+                                info: {
+                                    token: token,
+                                    nombres: login.persona.nombres,
+                                    apellidos: login.persona.apellidos,
+                                    correo: login.correo,
+                                    rol: nombreRol,
+                                    user: login.persona
+                                },
+                            });
 
                         } else {
                             res.json({
@@ -79,13 +88,13 @@ class CuentaController {
                     } else if (login.estado === "ESPERA") {
                         res.json({
                             msg: "SU PETICIÓN SE ENCUENTRA EN ESPERA",
-                            code: 200
+                            code: 201
                         });
                     }
                     else {
                         res.json({
                             msg: "CUENTA SIN PERMISO DE ACCESO",
-                            code: 200
+                            code: 201
                         });
                     }
                 }
