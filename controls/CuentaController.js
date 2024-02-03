@@ -19,6 +19,7 @@ class CuentaController {
                         attributes: ['nombres', 'apellidos', 'cargo', 'external_id', 'institucion'],
                     }]
                 });
+                console.log("datos");
                 const query = `
             SELECT persona.id, persona_rol.id_persona, persona_rol.id_rol, rol.id, rol.nombre
             FROM persona_rol
@@ -26,6 +27,8 @@ class CuentaController {
             INNER JOIN rol ON persona_rol.id_rol = rol.id
             WHERE persona.id = :id
           `;
+          
+      
                 if (login === null) {
                     res.status(400);
                     res.json({
