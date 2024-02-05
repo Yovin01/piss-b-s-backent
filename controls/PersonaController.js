@@ -34,8 +34,8 @@ class PersonaController {
             });
             res.json({ msg: 'OK!', code: 200, info: listar });
         } catch (error) {
-            res.status(400)
-            res.json({ msg: 'Error', code: 400, info: error });
+            res.status(500)
+            res.json({ msg: 'Error al listar personas', code: 500, info: error });
         }
     }
 
@@ -96,59 +96,63 @@ class PersonaController {
             res.status(200);
             res.json({ msg: 'OK!', code: 200, info: listar });
         } catch (error) {
-            res.status(400);
-            res.json({ msg: 'ERROR', code: 400, info: error });
+            res.status(500);
+            res.json({ msg: 'Error al obtener persona', code: 500, info: error });
         }
     }
 
     async guardar(req, res) {
-        let errors = validationResult(req);
-        if (errors.isEmpty()) {
-            let rol_id = req.body.external_rol;
-            if (rol_id != undefined) {
-                let rolAux = await rol.findOne({ where: { external_id: rol_id } });
-                if (rolAux) {
-                    var claveHash = function (clave) {
-                        return bcrypt.hashSync(clave, bcrypt.genSaltSync(saltRounds), null);
-                    };
-                    console.log(claveHash(req.body.clave));
-                    var data = {
-                        apellidos: req.body.apellidos,
-                        nombres: req.body.nombres,
-                        cargo: req.body.cargo,
-                        institucion: req.body.institucion,
-                        fecha_nacimiento: req.body.fecha_nacimiento,
-                        estado: false,
-                        cuenta: {
-                            correo: req.body.correo,
-                            clave: claveHash(req.body.clave)
-                        },
-                        persona_rol: {
-                            id_rol: rolAux.id
-                        }
-                    };
-                    res.status(200);
-                    let transaction = await models.sequelize.transaction();
+        try {
+            let errors = validationResult(req);
+            if (errors.isEmpty()) {
+                let rol_id = req.body.external_rol;
+                if (rol_id != undefined) {
+                    let rolAux = await rol.findOne({ where: { external_id: rol_id } });
+                    if (rolAux) {
+                        var claveHash = function (clave) {
+                            return bcrypt.hashSync(clave, bcrypt.genSaltSync(saltRounds), null);
+                        };
+                        console.log(claveHash(req.body.clave));
+                        var data = {
+                            apellidos: req.body.apellidos,
+                            nombres: req.body.nombres,
+                            cargo: req.body.cargo,
+                            institucion: req.body.institucion,
+                            fecha_nacimiento: req.body.fecha_nacimiento,
+                            estado: false,
+                            cuenta: {
+                                correo: req.body.correo,
+                                clave: claveHash(req.body.clave)
+                            },
+                            persona_rol: {
+                                id_rol: rolAux.id
+                            }
+                        };
+                        res.status(200);
+                        let transaction = await models.sequelize.transaction();
 
-                    try {
-                        await persona.create(data, { include: [{ model: models.cuenta, as: "cuenta" }, { model: models.persona_rol, as: "persona_rol" }], transaction });
-                        console.log('guardado');
-                        await transaction.commit();
-                        res.json({ msg: "Su petición se encuentra en espera, se confirmará su registro", code: 200 });
-                    } catch (error) {
-                        if (transaction) await transaction.rollback();
-                        if (error.error && error.error[0].message) {
-                            res.json({ msg: error.error[0].message, code: 201 });
-                        } else {
-                            res.json({ msg: error.message, code: 201 });
+                        try {
+                            await persona.create(data, { include: [{ model: models.cuenta, as: "cuenta" }, { model: models.persona_rol, as: "persona_rol" }], transaction });
+                            console.log('guardado');
+                            await transaction.commit();
+                            res.json({ msg: "Su petición se encuentra en espera, se confirmará su registro", code: 200 });
+                        } catch (error) {
+                            if (transaction) await transaction.rollback();
+                            if (error.error && error.error[0].message) {
+                                res.json({ msg: error.error[0].message, code: 201 });
+                            } else {
+                                res.json({ msg: error.message, code: 201 });
+                            }
                         }
+
+                    } else {
+                        res.status(400);
+                        res.json({ msg: "Datos no encontrados", code: 400 });
                     }
-                    //podemos poner persona . create o save
-                    // console.log(personaAux);
 
                 } else {
                     res.status(400);
-                    res.json({ msg: "Datos no encontrados", code: 400 });
+                    res.json({ msg: "Datos Faltantes", code: 400, errors: errors });
                 }
 
             } else {
@@ -156,11 +160,14 @@ class PersonaController {
                 res.json({ msg: "Datos Faltantes", code: 400, errors: errors });
             }
 
-        } else {
-            res.status(400);
-            res.json({ msg: "Datos Faltantes", code: 400, errors: errors });
-        }
+        } catch (error) {
+            res.status(500);
+            res.json({
+                msg: "Se produjo un error al registrar al usuario" + error,
+                code: 500
+            });
 
+        }
     }
 
     async modificar(req, res) {
@@ -196,10 +203,10 @@ class PersonaController {
                 }
             }
         } catch (error) {
-            res.status(400);
+            res.status(500);
             res.json({
                 msg: "Hubo un error al modificar" + error,
-                code: 400
+                code: 500
             });
         }
     }

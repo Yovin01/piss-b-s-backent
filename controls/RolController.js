@@ -11,7 +11,7 @@ class RolController{
             });
             res.json({msg:'OK!',code:200,info:listar});
         } catch (error) {
-            res.json({msg:'Algo salio mal en listar roles',code:200,info:error});
+            res.json({msg:'Se produjo un error en listar roles',code:200,info:error});
         }
     }
 
