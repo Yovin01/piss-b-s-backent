@@ -118,6 +118,7 @@ class PersonaController {
                         cargo: req.body.cargo,
                         institucion: req.body.institucion,
                         fecha_nacimiento: req.body.fecha_nacimiento,
+                        estado: false,
                         cuenta: {
                             correo: req.body.correo,
                             clave: claveHash(req.body.clave)
@@ -133,13 +134,13 @@ class PersonaController {
                         await persona.create(data, { include: [{ model: models.cuenta, as: "cuenta" }, { model: models.persona_rol, as: "persona_rol" }], transaction });
                         console.log('guardado');
                         await transaction.commit();
-                        res.json({ msg: "Se han registrado sus datos con éxito", code: 200 });
+                        res.json({ msg: "Su petición se encuentra en espera, se confirmará su registro", code: 200 });
                     } catch (error) {
                         if (transaction) await transaction.rollback();
                         if (error.error && error.error[0].message) {
-                            res.json({ msg: error.error[0].message, code: 200 });
+                            res.json({ msg: error.error[0].message, code: 201 });
                         } else {
-                            res.json({ msg: error.message, code: 200 });
+                            res.json({ msg: error.message, code: 201 });
                         }
                     }
                     //podemos poner persona . create o save

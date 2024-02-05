@@ -104,8 +104,8 @@ class CuentaController {
                 res.json({ msg: "Faltan datos", code: 400 });
             }
         } catch (error) {
-            res.status(200);
-            res.json({ msg: "Error al encontrar la llave", code: 400, info: error });
+            res.status(500);
+            res.json({ msg: "Error al encontrar la llave", code: 500, info: error });
         }
     }
 }
