@@ -142,4 +142,7 @@ router.post('/guardar/personas', [
 ], personaController.guardar);
 router.post('/modificar/personas', /*auth,*/ personaController.modificar);
 
+//TOKEN PARA CUENTA
+//router.get('/token/personas', personaController.tokenCuentaPersona);
+
 module.exports = router;

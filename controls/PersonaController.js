@@ -7,6 +7,7 @@ var persona_rol = models.persona_rol;
 var cuenta = models.cuenta;
 const bcrypt = require('bcrypt');
 const saltRounds = 8;
+let jwt = require('jsonwebtoken');
 
 class PersonaController {
 
@@ -122,7 +123,8 @@ class PersonaController {
                             estado: false,
                             cuenta: {
                                 correo: req.body.correo,
-                                clave: claveHash(req.body.clave)
+                                clave: claveHash(req.body.clave),
+                                token: this.tokenCuentaPersona
                             },
                             persona_rol: {
                                 id_rol: rolAux.id
@@ -169,6 +171,15 @@ class PersonaController {
 
         }
     }
+
+    /*async tokenCuentaPersona(req, res){
+        require('dotenv').config();
+        const cuerpo = {
+            estado_cuenta: 'ACEPTADO',
+        };
+        const token = jwt.sign(payload, process.env.KEY);
+        res.status(200).json({ msg: "Token de dispositivo generado", code: 200, token });
+    }*/
 
     async modificar(req, res) {
         try {
