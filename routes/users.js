@@ -10,6 +10,8 @@ const PersonaController = require('../controls/PersonaController');
 var personaController = new PersonaController();
 const CuentaController = require('../controls/CuentaController');
 var cuentaController = new CuentaController();
+const PeticionController = require('../controls/PeticionController');
+var peticionController = new PeticionController();
 let jwt = require('jsonwebtoken');
 
 /*const storage_archivo = (dir) => multer.diskStorage({
@@ -142,7 +144,8 @@ router.post('/guardar/personas', [
 ], personaController.guardar);
 router.post('/modificar/personas', /*auth,*/ personaController.modificar);
 
-//TOKEN PARA CUENTA
-//router.get('/token/personas', personaController.tokenCuentaPersona);
+//petciones
+router.get('/listar/peticiones', /*auth,*/ peticionController.listar);
+router.get('/aceptarechazar/peticiones/:external/:estado', /*auth,*/ peticionController.aceptarRechazar);
 
 module.exports = router;
