@@ -2,8 +2,8 @@
     "development": {
         "username": "desarrollo",
         "password": "desarrollo",
-        "database": "pisbacksexto",
-        "host": "127.0.0.1",
+        "database": "pisdb",
+        "host": "mysqldb",
         "dialect": "mysql",
         "operatorAliases": false
     }

@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
         apellidos: { type: DataTypes.STRING(70), defaultValue: "NO_DATA" },
         external_id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4},
         cargo: {type: DataTypes.STRING(40), defaultValue: "NO_DATA"},
-        institucion: {type: DataTypes.STRING(70), defaultValue: "NO_DATA"}, 
+        institucion: {type: DataTypes.STRING(70), defaultValue: "NO_DATA"},
+        fecha_nacimiento:{type: DataTypes.DATE},
         estado:{type: DataTypes.BOOLEAN, defaultValue: true}
     }, {
         freezeTableName: true
