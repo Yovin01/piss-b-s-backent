@@ -4,6 +4,7 @@ const models = require('../models/');
 var persona = models.persona;
 var rol = models.rol;
 var persona_rol = models.persona_rol;
+var peticion = models.peticion;
 var cuenta = models.cuenta;
 const bcrypt = require('bcrypt');
 const saltRounds = 8;
@@ -114,6 +115,7 @@ class PersonaController {
                             return bcrypt.hashSync(clave, bcrypt.genSaltSync(saltRounds), null);
                         };
                         console.log(claveHash(req.body.clave));
+                        
                         var data = {
                             apellidos: req.body.apellidos,
                             nombres: req.body.nombres,
@@ -124,17 +126,19 @@ class PersonaController {
                             cuenta: {
                                 correo: req.body.correo,
                                 clave: claveHash(req.body.clave),
-                                token: this.tokenCuentaPersona
+                                peticion: {
+                                    peticion:req.body.peticion
+                                }
                             },
                             persona_rol: {
                                 id_rol: rolAux.id
-                            }
+                            },
                         };
                         res.status(200);
                         let transaction = await models.sequelize.transaction();
 
                         try {
-                            await persona.create(data, { include: [{ model: models.cuenta, as: "cuenta" }, { model: models.persona_rol, as: "persona_rol" }], transaction });
+                            await persona.create(data, { include: [{ model: models.cuenta, as: "cuenta", include: { model: peticion, as: 'peticion' }}, { model: models.persona_rol, as: "persona_rol" }], transaction });
                             console.log('guardado');
                             await transaction.commit();
                             res.json({ msg: "Su petición se encuentra en espera, se confirmará su registro", code: 200 });
@@ -172,15 +176,6 @@ class PersonaController {
         }
     }
 
-    /*async tokenCuentaPersona(req, res){
-        require('dotenv').config();
-        const cuerpo = {
-            estado_cuenta: 'ACEPTADO',
-        };
-        const token = jwt.sign(payload, process.env.KEY);
-        res.status(200).json({ msg: "Token de dispositivo generado", code: 200, token });
-    }*/
-
     async modificar(req, res) {
         try {
             var person = await persona.findOne({ where: { external_id: req.body.external } });
@@ -198,6 +193,7 @@ class PersonaController {
                 person.institucion = req.body.institucion;
                 person.fecha_nacimiento = req.body.fecha_nacimiento;
                 person.external_id = uuid.v4();
+                console.log(person.fecha_nacimiento);
                 var result = await person.save();
                 if (result === null) {
                     res.status(400);
