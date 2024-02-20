@@ -16,7 +16,7 @@ class CuentaController {
                 var login = await cuenta.findOne({
                     where: { correo: req.body.correo }, include: [{
                         model: models.persona, as: 'persona',
-                        attributes: ['nombres', 'apellidos', 'cargo', 'external_id', 'institucion'],
+                        attributes: ['nombres', 'apellidos', 'cargo', 'external_id', 'institucion', 'fecha_nacimiento'],
                     }]
                 });
                 console.log("datos");
@@ -27,7 +27,6 @@ class CuentaController {
             INNER JOIN rol ON persona_rol.id_rol = rol.id
             WHERE persona.id = :id
           `;
-          
       
                 if (login === null) {
                     res.status(400);
